@@ -1,8 +1,22 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TodoProvider } from '../contexts/TodoContext';
 import { useTodo } from '../hooks/useTodo';
-// import { act } from 'react-dom/test-utils';
+
+// Mock the sessionStorage utilities since this test focuses on context behavior
+vi.mock('../utils/sessionStorage', () => ({
+  loadTodos: vi.fn(),
+  saveTodos: vi.fn(),
+  isValidTodos: vi.fn(),
+  isValidTodo: vi.fn(),
+}));
+
+import { loadTodos, saveTodos } from '../utils/sessionStorage';
+
+// Type the mocked functions
+const mockLoadTodos = loadTodos as ReturnType<typeof vi.fn>;
+const mockSaveTodos = saveTodos as ReturnType<typeof vi.fn>;
 
 const TestComponent = () => {
   const { todos, addTodo, toggleTodoCompletion, deleteTodo } = useTodo();
@@ -33,6 +47,17 @@ const TestComponent = () => {
 };
 
 describe('TodoContext', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Default mock returns for clean test state
+    mockLoadTodos.mockReturnValue([]);
+    mockSaveTodos.mockReturnValue(null);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('provides empty todos array initially', () => {
     render(
       <TodoProvider>
