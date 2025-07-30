@@ -122,8 +122,8 @@ describe('TodoProvider with sessionStorage', () => {
     expect(screen.getByTestId('todo-count')).toHaveTextContent('1');
 
     // Find the call that has todos with length > 0 (not the initial empty array save)
-    const saveCalls = mockSaveTodos.mock.calls;
-    const callWithTodos = saveCalls.find((call: unknown[]) => (call[0] as unknown[]).length > 0);
+    const saveCalls: [Todo[]][] = mockSaveTodos.mock.calls as [Todo[]][];
+    const callWithTodos = saveCalls.find(call => call[0].length > 0);
     expect(callWithTodos).toBeDefined();
 
     const savedTodos = callWithTodos![0];
